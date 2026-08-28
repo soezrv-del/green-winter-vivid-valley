@@ -1,0 +1,20 @@
+# Capacitor
+cap-www/
+ios/App/App/public/
+ios/capacitor-cordova-ios-plugins/
+
+# Agent / design dumps (not shipped with the app)
+screenshots/
+attachments/
+
+# Node / build
+node_modules/
+dist/
+.output/
+.vinxi/
+.vercel/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
