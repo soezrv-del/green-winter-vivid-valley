@@ -69,6 +69,11 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <HeadContent />
       </head>
       <body className="bg-bg text-white antialiased">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var vv=window.visualViewport;var h=Math.min.apply(null,[vv&&vv.height,document.documentElement.clientHeight,window.innerHeight].filter(function(n){return typeof n==="number"&&n>50}));if(h){var r=document.documentElement;r.style.setProperty("--app-height",h+"px");r.style.setProperty("--vv-height",h+"px");}}catch(e){}})();`,
+          }}
+        />
         {children}
         <Scripts />
       </body>

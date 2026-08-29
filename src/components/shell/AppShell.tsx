@@ -45,9 +45,6 @@ const MoreApp = lazy(() =>
   import("@/components/more/MoreApp").then((m) => ({ default: m.MoreApp })),
 );
 
-const FLOAT_TAB_PAD =
-  "pb-[calc(5.15rem+env(safe-area-inset-bottom,0px))]";
-
 function SuiteFallback() {
   return (
     <div className="flex h-full items-center justify-center bg-bg">
@@ -186,6 +183,8 @@ export function AppShell() {
     enabled: !launchOpen,
   });
 
+  // Never hide the dock for a "keyboard" that is actually preview chrome
+  // shrinking visualViewport. kb.open now requires a focused text field.
   const hideDock = launchOpen || grokSplashPlaying || kb.open;
 
   const nav = useMemo(
@@ -219,13 +218,12 @@ export function AppShell() {
         data-page-accent={PAGE_ACCENT[tab] ?? "sapphire"}
         style={{
           overscrollBehavior: "none",
-          // Fill the preview iframe with % height. Only pin to visualViewport
-          // pixels when the keyboard is open (native iOS). Pixel vvHeight on
-          // first paint hydrates as a mismatch and can collapse the shell.
-          height:
-            kb.open && kb.vvHeight > 0 ? `${kb.vvHeight}px` : "100%",
+          // Pin to the visible frame (visualViewport / clientHeight), not 100dvh.
+          // 100dvh inside the Grok preview WebView is taller than the iframe
+          // and clips the composer + dock under a black void.
+          height: kb.vvHeight > 0 ? `${kb.vvHeight}px` : "var(--app-height, 100%)",
           maxHeight:
-            kb.open && kb.vvHeight > 0 ? `${kb.vvHeight}px` : "100%",
+            kb.vvHeight > 0 ? `${kb.vvHeight}px` : "var(--app-height, 100%)",
           transform:
             kb.open && kb.vvOffsetTop > 0
               ? `translateY(${kb.vvOffsetTop}px)`
@@ -247,9 +245,7 @@ export function AppShell() {
 
         <main
           ref={mainRef}
-          className={`relative min-h-0 flex-1 overflow-hidden touch-pan-y ${
-            hideDock ? "pb-2" : FLOAT_TAB_PAD
-          }`}
+          className="relative min-h-0 flex-1 overflow-hidden touch-pan-y"
           aria-hidden={launchOpen}
         >
           <Suspense fallback={<SuiteFallback />}>
@@ -305,7 +301,7 @@ export function AppShell() {
         </main>
 
         {!hideDock ? (
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40">
+          <div className="relative z-40 w-full shrink-0">
             <BottomTabs tab={tab} onChange={onTabChange} />
           </div>
         ) : null}
