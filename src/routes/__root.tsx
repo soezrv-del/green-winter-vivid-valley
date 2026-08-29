@@ -46,6 +46,7 @@ export const Route = createRootRoute({
       ],
       links: [
         { rel: "stylesheet", href: appCss },
+        { rel: "stylesheet", href: "/dock-visible.css" },
         { rel: "icon", href: "/assets/brand/icon-rvfax.png" },
         { rel: "apple-touch-icon", href: "/assets/brand/icon-rvfax.png" },
       ],

@@ -1,0 +1,11 @@
+/* Force the suite dock visible. Xcode WKWebView + Grok preview chrome
+   shrink visualViewport; the old html.kb-open rule set opacity:0. */
+html.kb-open .bottom-tabs-dock,
+html.kb-open [data-bottom-dock],
+html.kb-open [data-bottom-dock-slot],
+.bottom-dock-slot,
+.bottom-tabs-nav,
+.bottom-tabs-dock {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
