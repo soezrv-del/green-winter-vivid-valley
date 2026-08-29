@@ -20,10 +20,6 @@ import {
   useKeyboardInset,
 } from "@/lib/hooks/useKeyboardInset";
 
-/**
- * Code-split suite tools — iOS cold start was parsing all 6 apps under splash.
- * Launchpad stays eager; tools load only when visited.
- */
 const RvFaxApp = lazy(() =>
   import("@/components/rvfax/RvFaxApp").then((m) => ({ default: m.RvFaxApp })),
 );
@@ -79,7 +75,7 @@ class SuiteErrorBoundary extends Component<
           </p>
           <button
             type="button"
-            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-bold text-white"
+            className="rounded-full border border-white/20 bg-black/10 px-4 py-2 text-[12px] font-bold text-white"
             onClick={() => this.setState({ err: null })}
           >
             Try again
@@ -133,7 +129,6 @@ export function AppShell() {
     [markVisited],
   );
 
-  // Absolute safety: never leave native splash forever if Launchpad fails
   useEffect(() => {
     const t = window.setTimeout(() => {
       void import("@capacitor/splash-screen")
@@ -183,9 +178,7 @@ export function AppShell() {
     enabled: !launchOpen,
   });
 
-  // Never hide the dock for a "keyboard" that is actually preview chrome
-  // shrinking visualViewport. kb.open now requires a focused text field.
-  const hideDock = launchOpen || grokSplashPlaying || kb.open;
+  const hideDock = launchOpen || grokSplashPlaying;
 
   const nav = useMemo(
     () => ({
@@ -218,9 +211,6 @@ export function AppShell() {
         data-page-accent={PAGE_ACCENT[tab] ?? "sapphire"}
         style={{
           overscrollBehavior: "none",
-          // Pin to the visible frame (visualViewport / clientHeight), not 100dvh.
-          // 100dvh inside the Grok preview WebView is taller than the iframe
-          // and clips the composer + dock under a black void.
           height: kb.vvHeight > 0 ? `${kb.vvHeight}px` : "var(--app-height, 100%)",
           maxHeight:
             kb.vvHeight > 0 ? `${kb.vvHeight}px` : "var(--app-height, 100%)",
@@ -301,7 +291,10 @@ export function AppShell() {
         </main>
 
         {!hideDock ? (
-          <div className="relative z-40 w-full shrink-0">
+          <div
+            className="bottom-dock-slot z-[90] w-full shrink-0"
+            data-bottom-dock-slot
+          >
             <BottomTabs tab={tab} onChange={onTabChange} />
           </div>
         ) : null}

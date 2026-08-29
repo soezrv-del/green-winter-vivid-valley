@@ -20,11 +20,15 @@ const config: CapacitorConfig = {
   backgroundColor: "#050508",
   loggingBehavior: "production",
   ios: {
-    contentInset: "automatic",
+    // never = we own safe-area in CSS. "automatic" inset the WKWebView and
+    // pushed the fixed/flex dock under the home indicator in Xcode builds.
+    contentInset: "never",
     preferredContentMode: "mobile",
     scheme: "RVFAX",
     allowsLinkPreview: false,
-    scrollEnabled: true,
+    // The suite scrolls inside .rv-scroll. If the WebView itself can scroll,
+    // the dock slides off-screen into the black void on iPhone.
+    scrollEnabled: false,
   },
   android: {
     allowMixedContent: false,
@@ -33,8 +37,6 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      // Keep native splash until Launchpad calls SplashScreen.hide()
-      // (avoids black gap while remote WebView JS + video buffer).
       launchShowDuration: 0,
       launchAutoHide: false,
       backgroundColor: "#050508",
@@ -48,14 +50,10 @@ const config: CapacitorConfig = {
       backgroundColor: "#050508",
     },
     Keyboard: {
-      // Let us position UI with visualViewport / --kb-inset (more reliable for
-      // fixed bottom sheets & dock on iOS than body resize alone).
       resize: "none",
       resizeOnFullScreen: true,
     },
-    App: {
-      // deep links can be added later: rvfax://
-    },
+    App: {},
   },
   ...(serverUrl
     ? {
